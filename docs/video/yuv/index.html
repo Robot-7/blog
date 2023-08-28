@@ -1,0 +1,123 @@
+<html>
+
+<head>
+    <script>
+        fetch('./assets/reolink_5k.yuv',
+            {
+                method: 'get',
+                responseType: 'arraybuffer'
+            }
+        )
+            .then((res) => {
+                return res.arrayBuffer();
+            })
+            .then((buffer) => {
+
+                const width = 96, height = 54;
+                const yuv = new Uint8Array(buffer);
+                const ySize = width * height;
+                const uvSize = width * height / 4;
+
+                const yData = yuv.subarray(0, ySize);
+                const uData = yuv.subarray(ySize, ySize + uvSize);
+                const vData = yuv.subarray(ySize + uvSize, yuv.length);
+
+                let uvIndex = 0;
+
+                const container = document.getElementById('container');
+
+                const fragment = document.createElement('div');
+
+                for (let yIndex = 0; yIndex <= yData.length; yIndex++) {
+
+                    if (yIndex % 4 == 0) {
+                        uvIndex++;
+                    }
+                    const pixElement = document.createElement('span');
+                    pixElement.style.display = 'inline-block';
+                    pixElement.style.width = '1px';
+                    pixElement.style.height = '1px';
+
+                    const y = yData[yIndex], u = uData[uvIndex], v = vData[uvIndex];
+                    const r = y + 1.403 * (v - 128),
+                        g = y - 0.343 * (u - 128) - 0.714 * (v - 128),
+                        b = y + 1.770 * (u - 128);
+
+                    pixElement.style.background = `rgb(${r},${g},${b})`;
+
+                    fragment.appendChild(pixElement);
+                    if (yIndex !== 0 && yIndex % width === 0) {
+                        fragment.appendChild(document.createElement("br"));
+                    }
+
+                }
+
+                container.appendChild(fragment);
+
+            })
+
+        fetch("./assets/reolink_200w.yuv")
+            .then((res) => res.arrayBuffer())
+            .then((buffer) => {
+
+                const width = 1920, height = 1080;
+                const yuv = new Uint8Array(buffer);
+                const ySize = width * height;
+                const uvSize = width * height / 4;
+
+                const yData = yuv.subarray(0, ySize);
+                const uData = yuv.subarray(ySize, ySize + uvSize);
+                const vData = yuv.subarray(ySize + uvSize, yuv.length);
+
+                let uvIndex = 0;
+
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext("2d");
+                const imgData = ctx.createImageData(width, height);
+
+                let i = 0;
+                for (let yIndex = 0; yIndex <= yData.length; yIndex++) {
+
+                    if (yIndex % 4 == 0) {
+                        uvIndex++;
+                    }
+
+
+                    const y = yData[yIndex], u = uData[uvIndex], v = vData[uvIndex];
+                    const r = y + 1.403 * (v - 128),
+                        g = y - 0.343 * (u - 128) - 0.714 * (v - 128),
+                        b = y + 1.770 * (u - 128);
+
+                    let j = i * 4;
+                    imgData.data[j + 0] = r;
+                    imgData.data[j + 1] = g;
+                    imgData.data[j + 2] = b;
+                    imgData.data[j + 3] = 255;
+
+                    i++;
+                }
+                ctx.putImageData(imgData, 0, 0);
+            })
+
+
+    </script>
+</head>
+
+<body>
+
+    <div>
+        html+css
+        <div id="container"></div>
+    </div>
+
+    <div>
+        canvas
+        <canvas id="canvas" width="1920px" height="1080px"></canvas>
+    </div>
+
+
+
+
+</body>
+
+</html>
