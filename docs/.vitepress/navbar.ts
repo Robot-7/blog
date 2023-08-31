@@ -11,7 +11,11 @@ export const nav: DefaultTheme.NavItem[] = [
     items: [
       {
         text: '音视频学习',
-        link: '/video/index'
+        link: 'md/video/index'
+      },
+      {
+        text: 'Rust学习',
+        link: 'md/rust/index'
       }
     ]
   },

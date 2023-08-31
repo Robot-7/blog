@@ -6,6 +6,16 @@ import { sidebar } from './sidebar';
 export default defineConfig({
   title: "唐啸博客",
   // description: "唐啸",
+  head: [
+    // 改变title的图标
+    [
+        'link',
+        {
+            rel: 'icon',
+            href: '/favicon.ico'
+        }
+    ]
+  ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: "/avatar.jpg",
